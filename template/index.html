@@ -1,0 +1,156 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Cards Against Humanity</title>
+    <style>
+      body {
+          font-family: Arial, sans-serif;
+          max-width: 1000px;
+          margin: 0 auto;
+          padding: 20px;
+          background-color: #f0f0f0;
+      }
+      .message {
+          background-color: #4CAF50;
+          color: white;
+          padding: 10px;
+          margin: 10px 0;
+          border-radius: 5px;
+          text-align: center;
+          display: {{if .Message}}block{{else}}none{{end}};
+      }
+      .prompt-card {
+          background-color: black;
+          color: white;
+          padding: 20px;
+          margin: 20px 0;
+          border-radius: 10px;
+          font-size: 1.2em;
+      }
+      .response-cards {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+          gap: 10px;
+          margin-bottom: 20px;
+      }
+      .response-card {
+          background-color: white;
+          padding: 15px;
+          border-radius: 10px;
+          cursor: pointer;
+          transition: transform 0.2s;
+          position: relative;
+      }
+      .response-card:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      }
+      .response-card input[type="radio"] {
+          position: absolute;
+          opacity: 0;
+          transform: translateY(-5px);
+          box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      }
+      .response-card input[type="radio"]:checked + label {
+          background-color: #e0e0e0;
+      }
+      .response-card label {
+          display: block;
+          padding: 15px;
+          cursor: pointer;
+          border-radius: 10px;
+      }
+      .button {
+          display: inline-block;
+          margin: 10px;
+          padding: 10px 20px;
+          background-color: #333;
+          color: white;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+          text-decoration: none;
+      }
+      .button:hover {
+          background-color: #555;
+      }
+      .history {
+          margin-top: 40px;
+          border-top: 2px solid #ccc;
+          padding-top: 20px;
+      }
+      .history-item {
+          background-color: #fff;
+          padding: 15px;
+          margin: 10px 0;
+          border-radius: 5px;
+          box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      }
+      .history-prompt {
+          background-color: black;
+          color: white;
+          padding: 10px;
+          margin-bottom: 10px;
+          border-radius: 5px;
+      }
+      .history-response {
+          background-color: #f8f8f8;
+          padding: 10px;
+          border-radius: 5px;
+      }
+      .history-timestamp {
+          color: #666;
+          font-size: 0.8em;
+          margin-top: 5px;
+      }
+      .controls {
+          text-align: center;
+          margin: 20px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="message">{{.Message}}</div>
+    <form method="POST">
+      <input type="hidden" name="prompt" value="{{.CurrentPrompt.Content}}" />
+
+      <div class="prompt-card">{{.CurrentPrompt.Content}}</div>
+
+      <div class="response-cards">
+        {{range $index, $card := .Responses}}
+        <div class="response-card">
+          <input
+            type="radio"
+            id="response{{$index}}"
+            name="response"
+            value="{{$card.Content}}"
+          />
+          <label for="response{{$index}}">{{$card.Content}}</label>
+        </div>
+        {{end}}
+      </div>
+
+      <div class="controls">
+        <button class="button" type="submit" name="action" value="submit">
+          Submit Answer
+        </button>
+        <button class="button" type="submit" name="action" value="refresh">
+          New Cards
+        </button>
+      </div>
+    </form>
+
+    <div class="history">
+      <h2>Submission History</h2>
+      {{range .History}}
+      <div class="history-item">
+        <div class="history-prompt">{{.Prompt}}</div>
+        <div class="history-response">{{.Response}}</div>
+        <div class="history-timestamp">
+          Submitted: {{.Timestamp.Format "Jan 02, 2006 15:04:05"}}
+        </div>
+      </div>
+      {{end}}
+    </div>
+  </body>
+</html>
